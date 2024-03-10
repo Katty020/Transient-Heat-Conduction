@@ -1,68 +1,59 @@
-from scipy import *
-from pylab import *
+import numpy as np
 import matplotlib.pyplot as plt
 
-dtau = 0.001 # Set dimensionless time increments
-dx = 0.05    # Set dimensionless length increments
-Tmax = 0.95  # Set maximum dimensionless temperature
-M = 21       # Counter for length discretization
+dtau = 0.001  # Set dimensionless time increments
+dx = 0.05     # Set dimensionless length increments
+Tmax = 0.95   # Set maximum dimensionless temperature
+M = 21        # Counter for length discretization
 
-#Calculate parameters
+# Calculate parameters
+dx_x = 1.0 / (M - 1)
+ratio = dtau / (dx**2)
+const = 1.0 - 2.0 * ratio
 
-dx = 1.0/(M-1)
-dx_x = 1.0/(M-1)
-ratio = dtau/(dx**2)
-const = 1.0 - 2.0*ratio
+# Set up arrays for solution
+T = np.zeros(M)
+T[0] = 1.0
+T[-1] = 1.0
 
-#Set counters to zero
+# Set up array for storing solutions at different time steps
+T_sol = np.zeros((400, M))
+T_sol[:, 0] = 1.0
+T_sol[:, -1] = 1.0
 
+# Set counters to zero
 i = 0
 tau = 0.0
 
-# Set up arrays for solution and print
-
-Tnew = zeros(M, dtype = float)
-T = zeros(M, dtype = float)
-T[0] = 1.0
-T[-1] = 1.0
-print "T initial = ", T
-
-# I just pick 400 on trial and error for the total array
-
-T_sol = zeros((400,M), dtype = float)
-T_sol[:,0] = 1.0
-T_sol[:,-1] = 1.0
 # While loop to iterate until mid-point temperature reaches Tmax
-
 while T[10] < Tmax:
-    i = i + 1
-    tau = tau + dtau
+    i += 1
+    tau += dtau
 
-# Calculate new tempertures
+    # Calculate new temperatures
+    Tnew = np.zeros(M)
+    for j in range(1, M - 1):
+        Tnew[j] = ratio * (T[j - 1] + T[j + 1]) + const * T[j]
 
-    for j in range(1,M-1):
-        Tnew[j] = ratio*(T[j-1] + T[j+1]) + const*T[j]
+    # Update temperatures
+    T[:] = Tnew[:]
+    T_sol[i, :] = T[:]
 
-# Substitute new Temperatures in array for T
+print("Tau and T_final =", tau, T_sol[i])
 
-    for k in range(1,M-1):
-        T[k] = Tnew[k]
-        T_sol[i,k] = T[k]
-
-print "Tau and T_final =", tau, T_sol[i
 # Set up array for spatial values of x to plot
-x = [i*dx_x for i in range(M-1)]
-x.append(1.0)
+x = np.linspace(0, 1, M)
 
 # Plot the solutions
-
-plot(x,T_sol[50,:])
-plot(x,T_sol[100,:])
-plot(x,T_sol[150,:])
-plot(x,T_sol[250,:])
-plot(x,T_sol[i,:])
-#legend(['Tau = 0.5','Tau = 0.1','Tau = 0.15','Tau = 0.25',
-#'Tau = final time'])
-title('Normalized Slab Temperatures')
+plt.plot(x, T_sol[50, :], label='Tau = 0.5')
+plt.plot(x, T_sol[100, :], label='Tau = 0.1')
+plt.plot(x, T_sol[150, :], label='Tau = 0.15')
+plt.plot(x, T_sol[250, :], label='Tau = 0.25')
+plt.plot(x, T_sol[i, :], label='Tau = final time')
+plt.title('Normalized Slab Temperatures')
+plt.xlabel('Normalized Length')
+plt.ylabel('Normalized Temperature')
+plt.legend()
+plt.grid()
 plt.show()
-grid()
+
