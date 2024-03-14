@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-dtau = 0.001  # Set dimensionless time increments
-dx = 0.05     # Set dimensionless length increments
-Tmax = 0.95   # Set maximum dimensionless temperature
-M = 21        # Counter for length discretization
+dtau = 0.001  
+dx = 0.05    
+Tmax = 0.95   
+M = 21        
 
 # Calculate parameters
 dx_x = 1.0 / (M - 1)
