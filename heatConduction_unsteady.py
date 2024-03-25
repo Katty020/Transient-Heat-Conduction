@@ -6,7 +6,7 @@ dx = 0.05
 Tmax = 0.95   
 M = 21        
 
-# Calculate parameters
+# Calculate parameter
 dx_x = 1.0 / (M - 1)
 ratio = dtau / (dx**2)
 const = 1.0 - 2.0 * ratio
